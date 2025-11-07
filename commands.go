@@ -3,6 +3,7 @@ package main
 import (
 	"os"	
 	"fmt"
+	"github.com/ericminnick/pokedex/internal/pokeapi"
 )
 
 
