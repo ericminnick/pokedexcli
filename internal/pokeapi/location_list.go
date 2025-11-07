@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"github.com/ericminnick/pokedexcli/internal/pokecache"
 )
 
 func (c *Client) ListLocations(pageURL *string) (mapResponse, error) {
