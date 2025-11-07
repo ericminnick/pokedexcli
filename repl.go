@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func replStart() {
+func replStart(*configCommand) {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("Pokedex > ")
