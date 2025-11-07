@@ -10,7 +10,7 @@ import (
 type cliCommand struct {
 	name		string
 	description	string		
-	callback 	func(config *configCommand) error
+	callback 	func(*configCommand) error
 }
 
 type configCommand struct {
