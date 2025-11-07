@@ -9,9 +9,9 @@ import (
 
 
 type cliCommand struct {
-	name		string
-	description	string		
-	callback 	func(*configCommand) error
+	name			string
+	description		string		
+	callback 		func(*configCommand) error
 }
 
 type configCommand struct {
