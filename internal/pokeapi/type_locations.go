@@ -1,4 +1,4 @@
-import pokeapi
+package pokeapi
 
 type mapResponse struct {
 	Count    int    `json:"count"`
