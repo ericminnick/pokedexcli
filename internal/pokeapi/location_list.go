@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (c *Client) ListLocations(pageURL *string) (RespShallowLocations{}) {
+func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
 	url := baseURL + "/location-area"
 	if pageURL != nil {
 		url = *pageURL
