@@ -21,13 +21,13 @@ type configCommand struct {
 }
 
 
-func commandExit(config *configCommand) error {
+func commandExit(config *configCommand, parameter string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(config *configCommand) error {
+func commandHelp(config *configCommand, parameter string) error {
 	fmt.Println()
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
@@ -39,7 +39,7 @@ func commandHelp(config *configCommand) error {
 	return nil
 }
 
-func commandMap(config *configCommand) error {
+func commandMap(config *configCommand, parameter string) error {
 	locationResult, err := config.pokeapiClient.ListLocations(config.next)
 	if err != nil {
 		return err
@@ -55,7 +55,7 @@ func commandMap(config *configCommand) error {
 	return nil
 }
 
-func commandMapb(config *configCommand) error {
+func commandMapb(config *configCommand, parameter string) error {
 	if config.previous == nil {
 		return errors.New("you're on the first page")
 	}
@@ -74,6 +74,19 @@ func commandMapb(config *configCommand) error {
 
 
 	return nil
+}
+
+func commandExplore(config *configCommand, parameter string) error {
+	exploreResult, err := config.pokeapiClient.exploreResult(parameter)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(exploreResult)
+
+
+	return nil
+
 }
 
 func getCommands() map[string]cliCommand {
@@ -97,6 +110,11 @@ func getCommands() map[string]cliCommand {
 			name:		"mapb",
 			description: "Retrieves and lists previous map locations 20 at a time",
 			callback: commandMapb,
+		},
+		"explore": {
+			name:		"explore",
+			description: "Retrieves the pokemon list located in specified area"
+			callback: commandExplore,
 		},
 	}
 }
