@@ -94,32 +94,42 @@ func commandExplore(config *configCommand, parameters ...string) error {
 	return nil
 }
 
+func commandCatch(config *configCommand, parameters ...string) error {
+	fmt.Printf("Throwing a Pokeball at %s\n", parameters[0])
+	return nil
+}
+
 func getCommands() map[string]cliCommand {
 	return map[string]cliCommand{
 		"exit": {
-			name: 		 "exit",
-			description: "Exit the Pokedex",
-			callback: 	 commandExit,
+			name: 		 	"exit",
+			description: 	"Exit the Pokedex",
+			callback: 		 commandExit,
 		},
 		"help": {
-			name: 		"help",
-			description: "Displays a help message",
-			callback: commandHelp,
+			name: 			"help",
+			description: 	"Displays a help message",
+			callback: 		commandHelp,
 		},
 		"map": {
-			name:		"map",
-			description: "Retrieves and lists map locations 20 at a time",
-			callback: commandMap,
+			name:			"map",
+			description: 	"Retrieves and lists map locations 20 at a time",
+			callback: 		commandMap,
 		},
 		"mapb": {
-			name:		"mapb",
-			description: "Retrieves and lists previous map locations 20 at a time",
-			callback: commandMapb,
+			name:			"mapb",
+			description: 	"Retrieves and lists previous map locations 20 at a time",
+			callback: 		commandMapb,
 		},
 		"explore": {
-			name:		"explore",
-			description: "Retrieves the pokemon encounters, located in specified area (explore <area-name>)",
-			callback: commandExplore,
+			name:			"explore <area>",
+			description: 	"Retrieves the pokemon encounters, located in specified area (explore <area-name>)",
+			callback:	 	commandExplore,
+		},
+		"catch": {
+			name: 			"catch <pokemon>",
+			description: 	"Adds a pokemon to your pokedex",
+			callback:		commandCatch,
 		},
 	}
 }
