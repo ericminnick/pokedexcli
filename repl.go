@@ -9,7 +9,7 @@ import (
 func replStart(config *configCommand) {
 
 	scanner := bufio.NewScanner(os.Stdin)
-
+	parameters := []string{} 
 	for {
 		
 		fmt.Print("Pokedex > ")
@@ -19,9 +19,12 @@ func replStart(config *configCommand) {
 		} 
 		cleanedOutput := cleanInput(scanner.Text())
 		value, ok := getCommands()[cleanedOutput[0]]
-		parameter := cleanedOutput[1]
+		if len(cleanedOutput) > 1 {
+			parameters = cleanedOutput[1:]
+		}
+
 		if ok {
-			if err := value.callback(config, parameter); err != nil {
+			if err := value.callback(config, parameters...); err != nil {
 				fmt.Println(err)
 				continue
 			}

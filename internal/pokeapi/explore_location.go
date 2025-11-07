@@ -6,14 +6,14 @@ import (
 	"net/http"
 )
 
-func (c *Client) ExploreLocation(name) (exploreResponse, error) {
+func (c *Client) ExploreLocation(name string) (exploreResponse, error) {
 	url := baseURL + "/location-area/" + name
 
 	if val, ok := c.cache.Get(url); ok {
 		exploreResp := exploreResponse{}
 		err := json.Unmarshal(val, &exploreResp)
 		if err != nil {
-			return explorResponse{}, err
+			return exploreResponse{}, err
 		}
 		return exploreResp, nil
 	}

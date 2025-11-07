@@ -11,7 +11,7 @@ import (
 type cliCommand struct {
 	name			string
 	description		string		
-	callback 		func(*configCommand) error
+	callback 		func(*configCommand, ...string) error
 }
 
 type configCommand struct {
@@ -21,13 +21,13 @@ type configCommand struct {
 }
 
 
-func commandExit(config *configCommand, parameter string) error {
+func commandExit(config *configCommand, parameters ...string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(config *configCommand, parameter string) error {
+func commandHelp(config *configCommand, parameters ...string) error {
 	fmt.Println()
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
@@ -39,7 +39,7 @@ func commandHelp(config *configCommand, parameter string) error {
 	return nil
 }
 
-func commandMap(config *configCommand, parameter string) error {
+func commandMap(config *configCommand, parameters ...string) error {
 	locationResult, err := config.pokeapiClient.ListLocations(config.next)
 	if err != nil {
 		return err
@@ -55,7 +55,7 @@ func commandMap(config *configCommand, parameter string) error {
 	return nil
 }
 
-func commandMapb(config *configCommand, parameter string) error {
+func commandMapb(config *configCommand, parameters ...string) error {
 	if config.previous == nil {
 		return errors.New("you're on the first page")
 	}
@@ -76,17 +76,22 @@ func commandMapb(config *configCommand, parameter string) error {
 	return nil
 }
 
-func commandExplore(config *configCommand, parameter string) error {
-	exploreResult, err := config.pokeapiClient.exploreResult(parameter)
+func commandExplore(config *configCommand, parameters ...string) error {
+	if len(parameters) != 1 {
+		return errors.New("you must provide a location name")
+	}
+
+	exploreResult, err := config.pokeapiClient.ExploreLocation(parameters[0])
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(exploreResult)
-
-
+	fmt.Printf("Exploring %s...\n", exploreResult.Name)
+	fmt.Println("Found Pokemon: ")
+	for _, encounter := range exploreResult.PokemonEncounters {
+		fmt.Printf(" - %s\n", encounter.Pokemon.Name)
+	}
 	return nil
-
 }
 
 func getCommands() map[string]cliCommand {
@@ -113,7 +118,7 @@ func getCommands() map[string]cliCommand {
 		},
 		"explore": {
 			name:		"explore",
-			description: "Retrieves the pokemon list located in specified area"
+			description: "Retrieves the pokemon encounters, located in specified area (explore <area-name>)",
 			callback: commandExplore,
 		},
 	}
