@@ -18,7 +18,7 @@ func replStart(config *configCommand) {
 		cleanedOutput := cleanInput(scanner.Text())
 		value, ok := getCommands()[cleanedOutput[0]]
 		if ok {
-			if err := value.callback(&config); err != nil {
+			if err := value.callback(config); err != nil {
 				fmt.Errorf("error issuing command %v", err)
 				continue
 			}
