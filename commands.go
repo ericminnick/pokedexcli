@@ -2,11 +2,9 @@ package main
 
 import (
 	"os"	
-	"io"
 	"fmt"
-	"net/http"
-	"encoding/json"
 )
+
 
 type cliCommand struct {
 	name		string
@@ -15,19 +13,11 @@ type cliCommand struct {
 }
 
 type configCommand struct {
-	next		string
-	previous	string
+	pokeapiClient	pokeapi.Client
+	next			string
+	previous		string
 }
 
-type mapResponse struct {
-	Count    int    `json:"count"`
-	Next     string `json:"next"`
-	Previous string `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"results"`
-}
 
 func commandExit(config *configCommand) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
