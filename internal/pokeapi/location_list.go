@@ -12,7 +12,7 @@ func (c *Client) ListLocations(pageURL *string) (mapResponse, error) {
 		url = *pageURL
 	}
 
-	if val, ok := c.content.Get(url); ok {
+	if val, ok := c.cache.Get(url); ok {
 		locationsResp := mapResponse{}
 		err := json.Unmarshal(val, &locationsResp)
 		if err != nil {
@@ -43,6 +43,6 @@ func (c *Client) ListLocations(pageURL *string) (mapResponse, error) {
 		return mapResponse{}, err
 	}
 
-	c.content.Add(url, dat)
+	c.cache.Add(url, dat)
 	return locationsResp, nil
 }
