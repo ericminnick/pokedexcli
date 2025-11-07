@@ -3,6 +3,7 @@ package main
 import (
 	"os"	
 	"fmt"
+	"errors"
 	"github.com/ericminnick/pokedexcli/internal/pokeapi"
 )
 
