@@ -19,7 +19,7 @@ func replStart(config *configCommand) {
 		value, ok := getCommands()[cleanedOutput[0]]
 		if ok {
 			if err := value.callback(config); err != nil {
-				fmt.Errorf("error issuing command %v", err)
+				fmt.Println(err)
 				continue
 			}
 		} else {
