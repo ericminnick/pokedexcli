@@ -4,6 +4,7 @@ import (
 	"os"	
 	"fmt"
 	"errors"
+	"math/rand"
 	"github.com/ericminnick/pokedexcli/internal/pokeapi"
 )
 
@@ -15,9 +16,19 @@ type cliCommand struct {
 }
 
 type configCommand struct {
+	pokedex 		map[string]Pokemon
 	pokeapiClient	pokeapi.Client
 	next			*string
 	previous		*string
+}
+
+type Pokemon struct {
+	name 			string
+	baseExp			int
+	height			int
+	weight			int
+	stats			map[string]int
+	types			[]string
 }
 
 
@@ -32,8 +43,8 @@ func commandHelp(config *configCommand, parameters ...string) error {
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
 	fmt.Println()
-	for cmd, cmdInfo := range getCommands() {
-		fmt.Printf("%v: %v\n", cmd, cmdInfo.description)
+	for _, cmdInfo := range getCommands() {
+		fmt.Printf("%v: %v\n", cmdInfo.name, cmdInfo.description)
 	}
 
 	return nil
@@ -95,8 +106,67 @@ func commandExplore(config *configCommand, parameters ...string) error {
 }
 
 func commandCatch(config *configCommand, parameters ...string) error {
-	fmt.Printf("Throwing a Pokeball at %s\n", parameters[0])
+	fmt.Printf("Throwing a Pokeball at %s...\n", parameters[0])
+
+	catchResult, err := config.pokeapiClient.CatchPokemon(parameters[0])
+	if err != nil {
+		return err
+	}
+		
+	retrievedStats := make(map[string]int)
+	for _, stat := range catchResult.Stats {
+		retrievedStats[stat.Stat.Name] = stat.BaseStat
+	}
+
+	typeList := []string{}
+	for _, poketype := range catchResult.Types {
+		typeList = append(typeList, poketype.Type.Name)
+	}
+
+	pokemon := Pokemon{
+		name:		catchResult.Name,
+		baseExp: 	catchResult.BaseExperience,
+		height:		catchResult.Height,
+		weight:		catchResult.Weight,
+		stats:		retrievedStats,
+		types:		typeList,
+	}
+
+	if _, ok := config.pokedex[pokemon.name]; ok {
+		fmt.Printf("%s already caught\n", pokemon.name)
+		return nil
+	}
+	
+	catchChance := 35 + (float64(pokemon.baseExp) - 36.0) * ((40.0)/(608.0-36.0)) 
+	catchRoll := rand.Intn(100)
+	
+	if int(catchChance) < catchRoll {
+		fmt.Printf("%s was caught!\n", pokemon.name)
+		config.pokedex[pokemon.name] = pokemon
+	} else {
+		fmt.Printf("%s escaped!\n", pokemon.name)
+	}
 	return nil
+}
+
+func commandInspect(config *configCommand, parameters ...string) error {
+	if pokemon, ok := config.pokedex[parameters[0]]; ok {
+		fmt.Printf("Name: %s\n", pokemon.name)
+		fmt.Printf("Height: %v\n", pokemon.height)
+		fmt.Printf("Weight: %v\n", pokemon.weight)
+		fmt.Printf("Stats:\n")
+		for key, value := range pokemon.stats {
+			fmt.Printf("  -%s: %v\n", key, value)
+		}
+		fmt.Printf("Types:\n")
+		for _, poketype := range pokemon.types {
+			fmt.Printf("  - %s\n", poketype)
+		}
+	} else {
+		fmt.Printf("you have not caught that pokemon")
+	} 
+
+	return nil	
 }
 
 func getCommands() map[string]cliCommand {
@@ -123,13 +193,18 @@ func getCommands() map[string]cliCommand {
 		},
 		"explore": {
 			name:			"explore <area>",
-			description: 	"Retrieves the pokemon encounters, located in specified area (explore <area-name>)",
+			description: 	"Retrieves the pokemon encounters, located in specified area",
 			callback:	 	commandExplore,
 		},
 		"catch": {
 			name: 			"catch <pokemon>",
-			description: 	"Adds a pokemon to your pokedex",
+			description: 	"Adds a pokemon to your pokedex", 
 			callback:		commandCatch,
+		},
+		"inspect": {
+			name:			"inspect <pokemon>",
+			description:	"Inpects a pokemon's pokedex entry",
+			callback:		commandInspect,
 		},
 	}
 }
